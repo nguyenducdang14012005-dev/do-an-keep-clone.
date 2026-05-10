@@ -1,0 +1,7 @@
+# Bỏ qua các thư viện nặng của Node
+**/node_modules
+npm-debug.log
+
+# Bỏ qua file nhạy cảm
+.env
+.DS_Store
