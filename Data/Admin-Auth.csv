@@ -1,0 +1,29 @@
+Ma test,Chuc nang,Du lieu dau vao,Cac buoc thuc hien,Ket qua mong doi
+AUTH-01,Dang ky tai khoan moi,email=newuser@cnpm.local; password=User@123; full_name=Nguyen Van A,Goi POST /api/auth/register,Tra ve 201; tao user status=Active; gan role User; ghi Audit_Logs action=AUTH_REGISTER
+AUTH-02,Dang ky trung email,email=quocky@cnpm.local; password=User@123,Goi POST /api/auth/register,Tra ve 409; khong tao user moi
+AUTH-03,Dang ky mat khau yeu,email=weak@cnpm.local; password=123,Goi POST /api/auth/register,Tra ve 400; thong bao mat khau khong dat yeu cau
+AUTH-04,Dang nhap admin hop le,email=quocky@cnpm.local; password=Admin@123; device_name=Chrome demo,Goi POST /api/auth/login,Tra ve 200; co JWT; user co role Admin; cap nhat User_Devices; ghi AUTH_LOGIN_SUCCESS
+AUTH-05,Dang nhap sai mat khau,email=quocky@cnpm.local; password=WrongPass,Goi POST /api/auth/login,Tra ve 401; khong cap JWT; ghi AUTH_LOGIN_FAILED
+AUTH-06,Dang nhap tai khoan bi khoa,Dat user bathuan@cnpm.local status=Banned,Goi POST /api/auth/login bang tai khoan do,Tra ve 403; thong bao tai khoan bi khoa
+AUTH-07,Lay thong tin tai khoan hien tai,JWT hop le cua quocky@cnpm.local,Goi GET /api/auth/me,"Tra ve user_id, email, full_name, status, roles; khong tra password"
+ADMIN-01,Chan user thuong vao trang admin,JWT cua user role User,Goi GET /api/admin/users,Tra ve 403 Forbidden
+ADMIN-02,Xem dashboard,JWT Admin,Goi GET /api/admin/dashboard,"Tra ve total_users, active_users, inactive_users, banned_users, total_roles, total_devices, total_audit_logs, total_backups, last_backup_at"
+ADMIN-03,Xem danh sach users,JWT Admin,Goi GET /api/admin/users,Tra ve danh sach users tu vw_Admin_User_List kem roles va total_devices
+ADMIN-04,Loc users theo status,status=Active,Goi GET /api/admin/users?status=Active,Chi tra cac tai khoan Active
+ADMIN-05,Tim users theo keyword,keyword=quocky,Goi GET /api/admin/users?keyword=quocky,Chi tra user co email hoac ho ten phu hop
+ADMIN-06,Khoa tai khoan user,target=bathuan@cnpm.local; status=Banned,Goi PATCH /api/admin/users/{id}/status,Users.status doi thanh Banned; ghi ADMIN_SET_USER_STATUS
+ADMIN-07,Tam ngung tai khoan user,target=bathuan@cnpm.local; status=Inactive,Goi PATCH /api/admin/users/{id}/status,Users.status doi thanh Inactive; ghi ADMIN_SET_USER_STATUS
+ADMIN-08,Kich hoat lai tai khoan,target=bathuan@cnpm.local; status=Active,Goi PATCH /api/admin/users/{id}/status,Users.status doi thanh Active; ghi ADMIN_SET_USER_STATUS
+ADMIN-09,Chan admin tu khoa minh,target=quocky@cnpm.local; status=Banned,Goi PATCH /api/admin/users/{id}/status,Tra ve 400; khong doi status
+ROLE-01,Xem danh sach role,JWT Admin,Goi GET /api/admin/roles,Tra ve Admin/User/Collaborator va so luong user moi role
+ROLE-02,Cap nhat role user,target=bathuan@cnpm.local; roles=User|Collaborator,Goi PUT /api/admin/users/{id}/roles,Cap nhat User_Roles; ghi ADMIN_UPDATE_USER_ROLES
+ROLE-03,Chan go Admin cuoi cung,target=quocky@cnpm.local; roles=User,Goi PUT /api/admin/users/{id}/roles,Tra ve 400; khong go role Admin
+AUDIT-01,Xem audit logs,JWT Admin,Goi GET /api/admin/audit-logs,Tra ve log moi nhat; sap xep timestamp giam dan
+AUDIT-02,Loc audit logs theo action,action=AUTH_LOGIN,Goi GET /api/admin/audit-logs?action=AUTH_LOGIN,Chi tra log co action phu hop
+AUDIT-03,Loc audit logs theo user va thoi gian,user_id=1; from=2026-06-01,Goi GET /api/admin/audit-logs?user_id=1&from=2026-06-01,Chi tra log dung user va moc thoi gian
+DEVICE-01,Xem thiet bi dang nhap,JWT Admin,Goi GET /api/admin/devices,Tra ve User_Devices kem email, device_name, ip_address, user_agent, last_login_at
+DEVICE-02,Loc thiet bi theo user,user_id=1,Goi GET /api/admin/devices?user_id=1,Chi tra thiet bi cua user do
+BACKUP-01,Ghi nhan backup,file_path=D:\\2026\\CNPM\\backup_google_keep_20260601.bak; execute_backup=false,Goi POST /api/admin/backups,Tao dong Backups status=Recorded; ghi Audit_Logs action=BACKUP_CREATED
+BACKUP-02,Chay backup that,file_path la duong dan SQL Server ghi duoc; execute_backup=true,Goi POST /api/admin/backups,SQL Server chay BACKUP DATABASE; Backups status=Completed; ghi BACKUP_CREATED
+BACKUP-03,Ghi nhan backup that bai,file_path khong hop le; execute_backup=true,Goi POST /api/admin/backups,Backups status=Failed; ghi BACKUP_FAILED; API tra loi BACKUP_EXECUTION_FAILED
+BACKUP-04,Xem lich su backup,JWT Admin,Goi GET /api/admin/backups,Tra ve danh sach Backups sap xep moi nhat truoc
