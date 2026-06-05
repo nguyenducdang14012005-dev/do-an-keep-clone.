@@ -17,10 +17,10 @@ export const connectDB = async () => {
     try {
         const pool = await sql.connect(config);
         if (pool.connected) {
-            console.log('✅ Ket noi SQL Server thanh cong!');
+            console.log(' Ket noi SQL Server thanh cong!');
         }
     } catch (err) {
-        console.error('❌ Loi ket noi SQL:', err.message);
+        console.error(' Loi ket noi SQL:', err.message);
         process.exit(1);
     }
 };

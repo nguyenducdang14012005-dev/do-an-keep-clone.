@@ -64,10 +64,10 @@ export const getShares = async (req, res) => {
     }
 }
 
-// Xóa chia sẻ
+
 export const removeShare = async (req, res) => {
     try{
-       const { share_id } = req.params;  // ← đổi note_id thành share_id
+       const { share_id } = req.params;  
         await sql.query`DELETE FROM Note_Shares WHERE share_id = ${share_id}`; 
         res.status(200).json({ message: ' xoa chia se thanh cong '})
 

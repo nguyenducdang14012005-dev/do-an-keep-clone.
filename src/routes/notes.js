@@ -4,13 +4,9 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 router.use(authMiddleware);
-
-// ← Route cụ thể đặt TRƯỚC
-router.delete('/trash/cleanup', noteController.cleanupTrash); // ← thêm vào đây!
+router.delete('/trash/cleanup', noteController.cleanupTrash); 
 router.get('/search', noteController.searchAndFilterNotes);
 router.post('/share', noteController.shareNoteMock);
-
-// ← Route có :id đặt SAU
 router.delete('/:id/versions/:version_id', noteController.deleteNoteVersion);
 router.post('/:id/versions', noteController.createNoteVersion);
 router.put('/:id/pin', noteController.togglePinNote);

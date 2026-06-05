@@ -3,8 +3,8 @@ import * as reminderController from '../controllers/reminderController.js';
 
 const router = express.Router();
 
-router.get('/', reminderController.getReminders);      // ← đổi tên
-router.post('/', reminderController.setReminder);      // ← đổi tên
+router.get('/', reminderController.getReminders);      
+router.post('/', reminderController.setReminder);      
 router.put('/:id', reminderController.updateReminder);
 router.delete('/:id', reminderController.deleteReminder);
 

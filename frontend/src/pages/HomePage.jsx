@@ -114,8 +114,8 @@ const [labelPickerNoteLabels, setLabelPickerNoteLabels] = useState([]);
             const diff = remindTime - now;
             remindTime.setHours(remindTime.getHours() + 7);
             if (diff > 0 && diff <= 10000) {
-                // Dùng showToast thay vì Notification!
-                showToast("⏰ Đã đến giờ nhắc nhở!");
+               
+                showToast(" Đã đến giờ nhắc nhở!");
             }
         });
     } catch {}
@@ -159,7 +159,7 @@ const [labelPickerNoteLabels, setLabelPickerNoteLabels] = useState([]);
   const handleShare = async () => {
   if (!shareEmail) return showToast("Vui lòng nhập email");
   try {
-    await fetch(`${API}/shares/${shareNoteId}`, {  // sửa từ notes/${shareNoteId}/share thành shares/${shareNoteId}
+    await fetch(`${API}/shares/${shareNoteId}`, {  
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: shareEmail, permission: sharePermission }),
@@ -573,7 +573,6 @@ function NavItem({ icon, label, active, onClick }) {
   );
 }
 
-// ✅ MỚI
 function NoteCard({ note, onPin, onStatus, onReminder, onShare, onLabel }) {
   const [hovered, setHovered] = useState(false);
   const bg = note.color && note.color !== "#FFFFFF" && note.color !== "#ffffff" ? note.color : "#fff";
@@ -636,6 +635,9 @@ function NoteCard({ note, onPin, onStatus, onReminder, onShare, onLabel }) {
           </button>
         </div>
       )}
+      
     </div>
+    
   );
+  
 }
