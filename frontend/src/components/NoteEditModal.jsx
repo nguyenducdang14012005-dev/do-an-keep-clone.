@@ -38,7 +38,6 @@ const formats = [
   "color",
   "background",
   "list",
-  "bullet",
   "align",
 ];
 
@@ -102,7 +101,7 @@ export default function NoteEditModal({
   const isArchived = note.status === "Archived";
 
   const isReadOnly = note.permission === "view";
-  const isSharedUser = note.permission !== undefined; // KIỂM TRA NGƯỜI ĐƯỢC CHIA SẺ
+  const isSharedUser = note.permission === "view" || note.permission === "edit"; // KIỂM TRA NGƯỜI ĐƯỢC CHIA SẺ
 
   // modules dùng toolbar array — stable, không tạo lại mỗi render
   const modules = React.useMemo(
@@ -124,8 +123,13 @@ export default function NoteEditModal({
   });
 
   const handleClose = () => {
-    if (!isReadOnly && dirtyRef.current) onClose(buildPayload());
-    else onClose(null);
+    if (!isReadOnly && dirtyRef.current) {
+      console.log("SAVE");
+      onClose(buildPayload());
+    } else {
+      console.log("ONLY CLOSE");
+      onClose(null);
+    }
   };
 
   const handleStatusClick = (status) => {
@@ -252,22 +256,6 @@ export default function NoteEditModal({
                     minute: "2-digit",
                   })}
                 </div>
-              )}
-              {!note.due_time && !dueTime && !datePickerOpen && !isReadOnly && (
-                <button
-                  ref={dateTriggerRef}
-                  className="card-btn"
-                  style={{
-                    marginLeft: 4,
-                    marginBottom: 4,
-                    fontSize: "0.82rem",
-                    color: "#5f6368",
-                  }}
-                  title="Thêm hạn chót"
-                  onClick={openDatePicker}
-                >
-                  + Thêm hạn chót
-                </button>
               )}
             </>
           )}

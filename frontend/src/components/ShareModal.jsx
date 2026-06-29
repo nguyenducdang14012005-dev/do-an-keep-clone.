@@ -3,7 +3,6 @@ import { getShares, removeShare } from "../services/shareService";
 
 const PERMISSION_LABEL = {
   view: "Chỉ xem",
-  edit: "Chỉnh sửa",
   delete: "Toàn quyền",
 };
 
@@ -58,12 +57,19 @@ export default function ShareModal({
         {/* Header */}
         <div className="modal-header">
           <span>Chia sẻ ghi chú</span>
-          <button className="icon-btn" onClick={onClose}>✖</button>
+          <button className="icon-btn" onClick={onClose}>
+            ✖
+          </button>
         </div>
 
         {/* Form gửi lời mời */}
-        <div className="modal-body" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <label style={{ fontSize: 13, color: "#5f6368" }}>Email người dùng:</label>
+        <div
+          className="modal-body"
+          style={{ display: "flex", flexDirection: "column", gap: 10 }}
+        >
+          <label style={{ fontSize: 13, color: "#5f6368" }}>
+            Email người dùng:
+          </label>
           <input
             className="modal-input"
             type="email"
@@ -71,21 +77,26 @@ export default function ShareModal({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <label style={{ fontSize: 13, color: "#5f6368" }}>Quyền truy cập:</label>
+          <label style={{ fontSize: 13, color: "#5f6368" }}>
+            Quyền truy cập:
+          </label>
           <select
             className="modal-select"
             value={permission}
             onChange={(e) => setPermission(e.target.value)}
           >
             <option value="view">Chỉ xem</option>
-            <option value="edit">Chỉnh sửa</option>
-            <option value="delete">Toàn quyền (có thể xóa)</option>
+            <option value="delete">Toàn quyền </option>
           </select>
         </div>
 
         <div className="modal-footer">
-          <button className="close-btn" onClick={onClose}>Hủy</button>
-          <button className="btn-share" onClick={onSave}>Gửi lời mời</button>
+          <button className="close-btn" onClick={onClose}>
+            Hủy
+          </button>
+          <button className="btn-share" onClick={onSave}>
+            Gửi lời mời
+          </button>
         </div>
 
         {/* Danh sách đang được chia sẻ */}
@@ -98,12 +109,21 @@ export default function ShareModal({
             gap: 8,
           }}
         >
-          <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: "#3c4043" }}>
+          <p
+            style={{
+              margin: 0,
+              fontSize: 13,
+              fontWeight: 600,
+              color: "#3c4043",
+            }}
+          >
             Đang chia sẻ với
           </p>
 
           {listLoading ? (
-            <p style={{ fontSize: 13, color: "#80868b", margin: "6px 0" }}>Đang tải...</p>
+            <p style={{ fontSize: 13, color: "#80868b", margin: "6px 0" }}>
+              Đang tải...
+            </p>
           ) : sharedList.length === 0 ? (
             <p style={{ fontSize: 13, color: "#80868b", margin: "6px 0" }}>
               Chưa chia sẻ với ai.
@@ -122,8 +142,17 @@ export default function ShareModal({
                   gap: 8,
                 }}
               >
-                <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: "#3c4043" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                    flex: 1,
+                  }}
+                >
+                  <span
+                    style={{ fontSize: 13, fontWeight: 500, color: "#3c4043" }}
+                  >
                     {s.email || s.full_name || "—"}
                   </span>
                   <span style={{ fontSize: 12, color: "#80868b" }}>
@@ -134,15 +163,15 @@ export default function ShareModal({
                           s.share_status === "Accepted"
                             ? "#1aa260"
                             : s.share_status === "Rejected"
-                            ? "#d64545"
-                            : "#c98a02",
+                              ? "#d64545"
+                              : "#c98a02",
                       }}
                     >
                       {s.share_status === "Accepted"
                         ? "Đã chấp nhận"
                         : s.share_status === "Rejected"
-                        ? "Đã từ chối"
-                        : "Đang chờ"}
+                          ? "Đã từ chối"
+                          : "Đang chờ"}
                     </span>
                   </span>
                 </div>

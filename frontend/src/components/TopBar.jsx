@@ -373,7 +373,7 @@ export default function TopBar({
                             }}
                           >
                             <option value="view">Chỉ xem</option>
-                            <option value="edit">Chỉnh sửa</option>
+
                             <option value="delete">Toàn quyền</option>
                           </select>
 
