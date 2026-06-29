@@ -43,6 +43,28 @@ Mục tiêu của dự án là thực hành xây dựng ứng dụng Fullstack v
 - Xác thực người dùng bằng JWT
 - Bảo vệ API
 
+## Quản trị viên (Admin)
+
+- Quản lý tài khoản
+- Xem danh sách người dùng
+- Tìm kiếm tài khoản
+- Cập nhật thông tin người dùng
+- Khóa / mở khóa tài khoản
+- Xóa tài khoản
+
+## Quản lý dữ liệu hệ thống
+
+- Xem thống kê tổng số tài khoản
+- Thống kê số lượng ghi chú
+- Theo dõi hoạt động hệ thống
+
+## Quản lý dữ liệu ghi chú
+
+### Phân quyền
+
+- User
+- Admin
+
 ### Giao diện
 
 - Responsive
