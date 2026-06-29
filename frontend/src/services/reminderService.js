@@ -10,6 +10,7 @@ export async function createReminder(payload) {
     body: JSON.stringify(payload),
   });
 }
+
 export async function updateReminder(id, payload) {
   return apiFetch(`${API}/reminders/${id}`, {
     method: "PUT",
@@ -17,4 +18,21 @@ export async function updateReminder(id, payload) {
   });
 }
 
-export default { getReminders, createReminder, updateReminder };
+export async function confirmReminderRead(id) {
+  return apiFetch(`${API}/reminders/confirm/${id}`, {
+    method: "PUT",
+  });
+}
+
+// 🆕 Lấy reminder hiện có của một note
+export async function getReminderByNote(noteId) {
+  return apiFetch(`${API}/reminders/note/${noteId}`);
+}
+
+export default {
+  getReminders,
+  createReminder,
+  updateReminder,
+  confirmReminderRead,
+  getReminderByNote,
+};

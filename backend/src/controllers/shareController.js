@@ -149,6 +149,19 @@ export const acceptShare = async (req, res) => {
 
     await sql.query`UPDATE Note_Shares SET share_status = 'Accepted' WHERE share_id = ${share_id}`;
 
+    // 🆕 Note này có thể đã có reminder từ trước -> tạo Reminder_Users cho
+    // người vừa chấp nhận chia sẻ, để họ cũng nhận được reminder như chủ note.
+    const noteReminders = await sql.query`
+      SELECT reminder_id FROM Reminders WHERE note_id = ${share.note_id} AND status = 0
+    `;
+    for (const r of noteReminders.recordset) {
+      await sql.query`
+        IF NOT EXISTS (SELECT 1 FROM Reminder_Users WHERE reminder_id = ${r.reminder_id} AND user_id = ${currentUserId})
+          INSERT INTO Reminder_Users (reminder_id, user_id, is_read)
+          VALUES (${r.reminder_id}, ${currentUserId}, 0)
+      `;
+    }
+
     // Lấy email + tên người chấp nhận để báo cho owner
     const userResult =
       await sql.query`SELECT email, full_name FROM Users WHERE user_id = ${currentUserId}`;
@@ -290,15 +303,20 @@ export const getAcceptedSharedNotes = async (req, res) => {
                 n.note_id, 
                 n.title, 
                 n.content, 
-                n.due_time, -- ⚡ ĐÃ BỔ SUNG: lấy thời gian hạn chót của ghi chú
+                n.due_time,
+                n.color,
+                n.is_pinned,
                 ns.share_id,
                 ns.permission, 
                 ns.share_status,
                 u.email AS shared_by_email, 
-                u.full_name AS shared_by_name
+                u.full_name AS shared_by_name,
+                r.reminder_id,
+                r.remind_time -- ⚡ BỔ SUNG: để hiển thị badge đồng hồ nhắc nhở cho note được chia sẻ
             FROM Note_Shares ns
             INNER JOIN Notes n ON ns.note_id = n.note_id
             INNER JOIN Users u ON n.user_id = u.user_id
+            LEFT JOIN Reminders r ON r.note_id = n.note_id AND r.status = 0
             WHERE ns.user_id = ${currentUserId} 
               AND ns.share_status = 'Accepted'
         `;
@@ -344,7 +362,7 @@ export const removeShare = async (req, res) => {
     const currentUserId = req.user.user_id;
 
     const shareResult = await sql.query`
-            SELECT ns.share_id, ns.user_id AS shared_user_id, n.user_id AS owner_id, n.title
+            SELECT ns.share_id, ns.note_id, ns.user_id AS shared_user_id, n.user_id AS owner_id, n.title
             FROM Note_Shares ns
             INNER JOIN Notes n ON ns.note_id = n.note_id
             WHERE ns.share_id = ${share_id}
@@ -366,6 +384,13 @@ export const removeShare = async (req, res) => {
             UPDATE Note_Shares
             SET share_status = 'Revoked', seen = 0
             WHERE share_id = ${share_id}
+        `;
+
+    // 🆕 Người bị thu hồi quyền chia sẻ không còn được nhận reminder của note này nữa
+    await sql.query`
+            DELETE FROM Reminder_Users
+            WHERE user_id = ${share.shared_user_id}
+              AND reminder_id IN (SELECT reminder_id FROM Reminders WHERE note_id = ${share.note_id})
         `;
 
     const sharedUserResult =

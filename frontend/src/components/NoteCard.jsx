@@ -143,15 +143,16 @@ export default function NoteCard({
           onClick={(e) => e.stopPropagation()}
         >
           🔔{" "}
-          {new Date(
-            new Date(note.remind_time).getTime() + 7 * 60 * 60 * 1000,
-          ).toLocaleString("vi-VN", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
+          {new Date(new Date(note.remind_time).getTime()).toLocaleString(
+            "vi-VN",
+            {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            },
+          )}
         </div>
       )}
 

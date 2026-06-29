@@ -6,6 +6,7 @@ import {
   deleteReminder,
   getDueReminders,
   confirmReminder,
+  getReminderByNote,
 } from "../controllers/reminderController.js";
 
 import authMiddleware from "../middlewares/authMiddleware.js";
@@ -18,6 +19,7 @@ router.get("/due-now", getDueReminders);
 
 router.post("/", setReminder);
 router.get("/", getReminders);
+router.get("/note/:noteId", getReminderByNote);
 router.put("/:id", updateReminder);
 router.delete("/:id", deleteReminder);
 

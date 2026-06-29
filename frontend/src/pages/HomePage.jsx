@@ -287,32 +287,32 @@ export default function HomePage({ isLogin, setIsLogin }) {
 
   const handleSetReminder = async () => {
     if (!reminderTime) return showToast("Vui lòng chọn thời gian");
-    try {
-      const data = await reminderService.getReminders();
 
-      // Tìm reminder đang active của đúng note này
-      const existing = data.find(
-        (r) => r.note_id === reminderNoteId && r.status == 0,
-      );
+    try {
+      // Kiểm tra note này đã có reminder chưa
+      const existing = await reminderService.getReminderByNote(reminderNoteId);
 
       if (existing) {
-        // Note đã có reminder → UPDATE thay vì tạo mới
+        // Đã có -> cập nhật giờ
         await reminderService.updateReminder(existing.reminder_id, {
           remind_time: reminderTime,
         });
+
         showToast("Đã cập nhật nhắc nhở");
       } else {
-        // Chưa có reminder → tạo mới
+        // Chưa có -> tạo mới
         await reminderService.createReminder({
           note_id: reminderNoteId,
           remind_time: reminderTime,
         });
+
         showToast("Đã đặt nhắc nhở");
       }
 
       setReminderOpen(false);
       setReminderTime("");
-    } catch {
+    } catch (error) {
+      console.error(error);
       showToast("Lỗi khi đặt nhắc nhở");
     }
   };
@@ -520,10 +520,10 @@ export default function HomePage({ isLogin, setIsLogin }) {
 
   const handleConfirmReminder = async (id) => {
     try {
-      await reminderService.updateReminder(id, {
-        status: 1,
-        remind_time: new Date().toISOString(),
-      });
+      // 🆕 Chỉ đánh dấu "đã xem" cho riêng người dùng hiện tại (Reminder_Users.is_read),
+      // KHÔNG còn update status=1 trên bảng Reminders dùng chung nữa, để A/B/C
+      // mỗi người có trạng thái thông báo độc lập khi note được chia sẻ.
+      await reminderService.confirmReminderRead(id);
       setDueReminders((prev) => prev.filter((r) => r.reminder_id !== id));
     } catch {}
   };
@@ -734,6 +734,41 @@ export default function HomePage({ isLogin, setIsLogin }) {
                           day: "2-digit",
                           month: "2-digit",
                           year: "numeric",
+                        })}
+                      </div>
+                    )}
+
+                    {/* ⚡ BỔ SUNG: Badge nhắc nhở — cùng style với badge nhắc nhở ở NoteCard,
+                        hiển thị cho note được chia sẻ có reminder đang hoạt động */}
+                    {n.remind_time && (
+                      <div
+                        className="note-reminder-badge"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          background: "rgba(26, 115, 232, 0.1)",
+                          padding: "4px 8px",
+                          borderRadius: "12px",
+                          fontSize: "12px",
+                          color: "#1a73e8",
+                          marginTop: "6px",
+                          width: "fit-content",
+                          fontWeight: "500",
+                        }}
+                      >
+                        ⏰{" "}
+                        {new Date(
+                          n.remind_time.endsWith("Z") ||
+                            n.remind_time.includes("+")
+                            ? n.remind_time
+                            : n.remind_time + "Z",
+                        ).toLocaleString("vi-VN", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
                         })}
                       </div>
                     )}

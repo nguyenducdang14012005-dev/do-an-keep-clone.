@@ -106,6 +106,7 @@ export const changeNoteStatus = async (req, res) => {
 
       await request.query(`
         DELETE FROM Note_Labels WHERE note_id = @id;
+        DELETE FROM Reminder_Users WHERE reminder_id IN (SELECT reminder_id FROM Reminders WHERE note_id = @id);
         DELETE FROM Reminders WHERE note_id = @id;
         DELETE FROM Note_Shares WHERE note_id = @id;
         DELETE FROM Note_Versions WHERE note_id = @id;
@@ -314,6 +315,10 @@ export const cleanupTrash = async (req, res) => {
     await pool.request().query(`
       DELETE nl FROM Note_Labels nl
         INNER JOIN Notes n ON nl.note_id = n.note_id
+        WHERE n.status = 'Deleted' AND n.deleted_at < DATEADD(DAY, -30, GETDATE());
+      DELETE ru FROM Reminder_Users ru
+        INNER JOIN Reminders r ON ru.reminder_id = r.reminder_id
+        INNER JOIN Notes n ON r.note_id = n.note_id
         WHERE n.status = 'Deleted' AND n.deleted_at < DATEADD(DAY, -30, GETDATE());
       DELETE r FROM Reminders r
         INNER JOIN Notes n ON r.note_id = n.note_id
