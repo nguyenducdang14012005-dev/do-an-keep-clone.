@@ -1,5 +1,6 @@
 import express from "express";
 import * as noteController from "../controllers/noteController.js";
+import * as checklistController from "../controllers/checklistController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
@@ -19,5 +20,15 @@ router.get("/:id/versions", noteController.getNoteVersions);
 router.post("/", noteController.createNote);
 router.get("/:id/labels", noteController.getNoteLabels);
 router.put("/:id", noteController.updateNote); // ⚡ Cập nhật tiêu đề/nội dung/màu/hạn chót ghi chú
+
+// ─── Checklist routes (/api/notes/:id/checklist) ──────────────────────────────
+router.get("/:id/checklist", checklistController.getChecklist);
+router.post("/:id/checklist", checklistController.addChecklistItem);
+router.put("/:id/checklist/reorder", checklistController.reorderChecklist); // reorder TRƯỚC :item_id
+router.put("/:id/checklist/:item_id", checklistController.updateChecklistItem);
+router.delete(
+  "/:id/checklist/:item_id",
+  checklistController.deleteChecklistItem,
+);
 
 export default router;

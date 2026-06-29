@@ -1,5 +1,68 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { getLabelColor } from "../constants/noteColors.js";
+import checklistService from "../services/checklistService.js";
+
+// ─── Hiển thị tóm tắt checklist trên card (lazy load) ─────────────────────────
+function ChecklistSummary({ noteId }) {
+  const [summary, setSummary] = useState(null); // null = chưa load, { done, total } = đã load
+
+  useEffect(() => {
+    let cancelled = false;
+    checklistService
+      .getChecklist(noteId)
+      .then((items) => {
+        if (cancelled || !Array.isArray(items) || items.length === 0) return;
+        const done = items.filter((i) => i.is_completed).length;
+        setSummary({ done, total: items.length });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [noteId]);
+
+  if (!summary) return null;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        marginTop: 6,
+        fontSize: 12,
+        color: "#5f6368",
+        fontWeight: 500,
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          height: 4,
+          borderRadius: 2,
+          background: "rgba(0,0,0,0.1)",
+          overflow: "hidden",
+          maxWidth: 80,
+        }}
+      >
+        <div
+          style={{
+            height: "100%",
+            borderRadius: 2,
+            background:
+              summary.done === summary.total && summary.total > 0
+                ? "#34a853"
+                : "var(--primary, #6c63ff)",
+            width: `${summary.total > 0 ? Math.round((summary.done / summary.total) * 100) : 0}%`,
+          }}
+        />
+      </div>
+      <span>
+        ☑ {summary.done}/{summary.total}
+      </span>
+    </div>
+  );
+}
 
 export default function NoteCard({
   note,
@@ -42,6 +105,9 @@ export default function NoteCard({
         dangerouslySetInnerHTML={{ __html: note.content }}
       />
 
+      {/* ── Tóm tắt checklist: chỉ hiển thị nếu ghi chú có items ── */}
+      <ChecklistSummary noteId={note.note_id} />
+
       {/* 1. Khu vực hiển thị Hạn Chót */}
       {note.due_time && (
         <div className="note-due-time">
@@ -78,9 +144,7 @@ export default function NoteCard({
         >
           🔔{" "}
           {new Date(
-            note.remind_time.endsWith("Z")
-              ? note.remind_time
-              : note.remind_time + "Z",
+            new Date(note.remind_time).getTime() + 7 * 60 * 60 * 1000,
           ).toLocaleString("vi-VN", {
             day: "2-digit",
             month: "2-digit",

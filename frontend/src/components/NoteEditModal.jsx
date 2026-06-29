@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { NOTE_COLORS, getLabelColor } from "../constants/noteColors.js";
+import ChecklistPanel from "./ChecklistPanel.jsx";
 
 const colorList = [
   "#000000",
@@ -96,8 +97,6 @@ export default function NoteEditModal({
     }
     setColorPickerOpen((v) => !v);
   };
-
-  const toolbarId = useRef(`ql-toolbar-modal-${note.note_id}`).current;
 
   const isDeleted = note.status === "Deleted";
   const isArchived = note.status === "Archived";
@@ -202,6 +201,9 @@ export default function NoteEditModal({
             modules={modules}
             formats={formats}
           />
+
+          {/* ── Checklist Panel: tự ẩn nếu không có data, không ảnh hưởng editor ── */}
+          <ChecklistPanel noteId={note.note_id} readOnly={isReadOnly} />
 
           {/* Hạn chót: Chỉ hiển thị và quản lý đối với Chủ sở hữu (Owner) */}
           {!isSharedUser && (
