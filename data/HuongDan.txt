@@ -1,0 +1,16 @@
+Tại Lần tải đầu tiên, với database tạo săn là GoogleKeepClone chạy thêm 3 file để thêm các cột xung.
+sau đó tạo lại file .evn ví dụng như này:
+
+PORT=5000
+
+DB_USER=sa
+DB_PASSWORD=12345
+DB_SERVER=localhost
+DB_DATABASE=GoogleKeepClone
+
+JWT_SECRET=super_secret_key_by_dang_123
+EMAIL_USER=lebathuan03052005@gmail.com
+EMAIL_PASS=amorsedsethhsoky
+
+cd vào hai thư mục backend và frontend và npm install rồi test thử coi có lỗi gì không ?
+có thì báo rồi mới sửa nhé cảm ơn <3
