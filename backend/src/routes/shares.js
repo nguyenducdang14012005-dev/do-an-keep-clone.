@@ -10,6 +10,7 @@ import {
   removeShare,
   markNotificationsSeen,
   updateSharePermission,
+  leaveNote,
 } from "../controllers/shareController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 
@@ -27,5 +28,5 @@ router.post("/:share_id/reject", rejectShare);
 router.delete("/:share_id", removeShare);
 
 router.put("/change-permission/:share_id", updateSharePermission);
-
+router.put("/:noteId/leave", leaveNote);
 export default router;

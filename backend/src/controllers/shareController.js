@@ -476,3 +476,29 @@ export const updateSharePermission = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+export const leaveNote = async (req, res) => {
+  try {
+    const { noteId } = req.params;
+    const userId = req.user.user_id;
+
+    const result = await sql.query`
+      DELETE FROM Note_Shares
+      WHERE note_id = ${noteId}
+        AND user_id = ${userId}
+    `;
+
+    if (result.rowsAffected[0] === 0) {
+      return res.status(404).json({
+        message: "Không tìm thấy lượt chia sẻ",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Đã rời khỏi ghi chú",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message,
+    });
+  }
+};

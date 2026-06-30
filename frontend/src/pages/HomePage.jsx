@@ -395,6 +395,22 @@ export default function HomePage({ isLogin, setIsLogin }) {
       loadNotes();
     } catch {}
   };
+  const handleLeave = async (noteId) => {
+    try {
+      console.log("leave", noteId);
+
+      const result = await shareService.leaveNote(noteId);
+      console.log(result);
+
+      setViewingNote(null);
+
+      await fetchNotes();
+
+      console.log("done");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const doChangeStatus = async (id, status) => {
     try {
@@ -1002,6 +1018,9 @@ export default function HomePage({ isLogin, setIsLogin }) {
             setLabelPickerNoteId(id);
             setLabelPickerNoteLabels(noteLabels);
             setLabelPickerOpen(true);
+          }}
+          onLeave={(id) => {
+            handleLeave(id);
           }}
         />
       )}

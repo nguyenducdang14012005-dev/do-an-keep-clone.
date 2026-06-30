@@ -55,8 +55,12 @@ export async function updateSharePermission(shareId, permission) {
     body: JSON.stringify({ permission }),
   });
 }
+export async function leaveNote(noteId) {
+  return apiFetch(`${API}/shares/${noteId}/leave`, {
+    method: "PUT",
+  });
+}
 
-// Đừng quên add vào object export default nếu bạn export dạng default
 export default {
   shareNote,
   getShares,
@@ -68,4 +72,5 @@ export default {
   rejectShare,
   removeShare,
   updateSharePermission,
+  leaveNote,
 };

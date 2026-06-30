@@ -51,7 +51,6 @@ const toolbarOptions = [
   [{ align: [] }],
   ["clean"],
 ];
-
 export default function NoteEditModal({
   note,
   onClose,
@@ -59,6 +58,7 @@ export default function NoteEditModal({
   onReminder,
   onShare,
   onLabel,
+  onLeave,
 }) {
   const [title, setTitle] = useState(note.title || "");
   const [content, setContent] = useState(note.content || "");
@@ -100,9 +100,15 @@ export default function NoteEditModal({
   const isDeleted = note.status === "Deleted";
   const isArchived = note.status === "Archived";
 
-  const isReadOnly = note.permission === "view";
-  const isSharedUser = note.permission === "view" || note.permission === "edit"; // KIỂM TRA NGƯỜI ĐƯỢC CHIA SẺ
+  const isOwner = !note.permission || note.permission === "owner";
 
+  const isEditor = note.permission === "edit" || note.permission === "delete";
+
+  const isViewer = note.permission === "view";
+
+  const isReadOnly = isViewer;
+
+  const isSharedUser = isEditor || isViewer;
   // modules dùng toolbar array — stable, không tạo lại mỗi render
   const modules = React.useMemo(
     () => ({
@@ -159,7 +165,7 @@ export default function NoteEditModal({
               markDirty();
             }}
           />
-          {!isDeleted && !isReadOnly && !isSharedUser && (
+          {isOwner && !isDeleted && (
             <button
               className="icon-btn"
               title={note.is_pinned ? "Bỏ ghim" : "Ghim"}
@@ -186,18 +192,6 @@ export default function NoteEditModal({
             value={content}
             readOnly={isReadOnly}
             onChange={(val) => {
-              // ⚡ LUẬT CHO NGƯỜI ĐƯỢC CHIA SẺ: Chỉ được thêm nội dung, chặn xóa nội dung cũ
-              if (isSharedUser) {
-                const cleanOld = (note.content || "")
-                  .replace(/<[^>]*>/g, "")
-                  .trim();
-                const cleanNew = val.replace(/<[^>]*>/g, "").trim();
-
-                if (cleanNew.length < cleanOld.length) {
-                  return;
-                }
-              }
-
               setContent(val);
               markDirty();
             }}
@@ -210,7 +204,7 @@ export default function NoteEditModal({
           <ChecklistPanel noteId={note.note_id} readOnly={isReadOnly} />
 
           {/* Hạn chót: Chỉ hiển thị và quản lý đối với Chủ sở hữu (Owner) */}
-          {!isSharedUser && (
+          {isOwner && (
             <>
               {note.due_time && !dueTime && !datePickerOpen && !isReadOnly && (
                 <div
@@ -332,7 +326,7 @@ export default function NoteEditModal({
               flexWrap: "wrap",
             }}
           >
-            {!isReadOnly && (
+            {isOwner && (
               <>
                 {/* 👑 ĐÃ SỬA: Đưa ô đổi màu nền ra ngoài điều kiện !isSharedUser để CHỦ SỞ HỮU dùng được bình thường */}
                 <div style={{ position: "relative" }}>
@@ -378,7 +372,7 @@ export default function NoteEditModal({
                 </div>
 
                 {/* Các chức năng Nhắc nhở, Chia sẻ, Gắn nhãn này vẫn ẩn đối với người được chia sẻ */}
-                {!isSharedUser && (
+                {isOwner && (
                   <>
                     {/* Nhắc nhở */}
                     <button
@@ -426,7 +420,7 @@ export default function NoteEditModal({
 
           {/* Nút trạng thái cuối form */}
           <div style={{ display: "flex", gap: 6 }}>
-            {!isReadOnly && !isSharedUser && (
+            {isOwner && (
               <>
                 {isDeleted ? (
                   <>
@@ -488,16 +482,26 @@ export default function NoteEditModal({
                 )}
               </>
             )}
-            <button className="close-btn" onClick={handleClose}>
-              Đóng
-            </button>
+            <div style={{ display: "flex", gap: 6 }}>
+              <button className="close-btn" onClick={handleClose}>
+                Đóng
+              </button>
+            </div>
+            {isSharedUser && (
+              <button
+                className="close-btn"
+                onClick={() => onLeave(note.note_id)}
+              >
+                Rời khỏi
+              </button>
+            )}
           </div>
         </div>
       </div>
 
       {/* Xác nhận xóa */}
       {deleteConfirmOpen &&
-        !isSharedUser &&
+        isOwner &&
         createPortal(
           <div
             className="modal-overlay"
