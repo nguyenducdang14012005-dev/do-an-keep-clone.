@@ -396,17 +396,18 @@ export default function HomePage({ isLogin, setIsLogin }) {
     } catch {}
   };
   const handleLeave = async (noteId) => {
-    try {
-      console.log("leave", noteId);
+    const confirmed = window.confirm(
+      "Bạn có chắc chắn muốn rời khỏi ghi chú này không?",
+    );
 
+    if (!confirmed) return;
+
+    try {
       const result = await shareService.leaveNote(noteId);
-      console.log(result);
 
       setViewingNote(null);
 
       await fetchNotes();
-
-      console.log("done");
     } catch (err) {
       console.error(err);
     }

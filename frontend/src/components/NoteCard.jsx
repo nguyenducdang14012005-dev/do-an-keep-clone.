@@ -198,6 +198,11 @@ export default function NoteCard({
                 title="Khôi phục ghi chú"
                 onClick={(e) => {
                   e.stopPropagation();
+                  const confirmed = window.confirm(
+                    "Bạn có chắc chắn muốn khôi phục ghi chú này không ?",
+                  );
+
+                  if (!confirmed) return;
                   onStatus(note.note_id, "Active");
                 }}
               >
@@ -217,6 +222,11 @@ export default function NoteCard({
                 title="Xóa vĩnh viễn"
                 onClick={(e) => {
                   e.stopPropagation();
+                  const confirmed = window.confirm(
+                    "Bạn có chắc chắn muốn xóa vĩnh viễn ghi chú này không? Hành động này không thể hoàn tác.",
+                  );
+
+                  if (!confirmed) return;
                   onStatus(note.note_id, "PermanentlyDeleted");
                 }}
                 style={{ color: "var(--accent)" }}
